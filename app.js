@@ -1,21 +1,24 @@
+import express from 'express';
 import dotenv from 'dotenv';
+import { createClient } from '@supabase/supabase-js'
+import morgan from 'morgan'
+import cors from './middleware/cors.js'
 
 dotenv.config();
 
-import express from 'express';
-import { createClient } from '@supabase/supabase-js'
-import morgan from 'morgan'
-import bodyParser from "body-parser";
-
 const app = express();
 
-const { SUPABASE_URL, SUPABASE_KEY, APP_PORT } = process.env;
+const { SUPABASE_URL, SUPABASE_KEY, APP_PORT, NODE_ENV } = process.env;
+
+if (NODE_ENV === 'development') {
+    app.use(cors)
+}
 
 // using morgan for logs
 app.use(morgan('combined'));
 
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+app.use(express.json());
+app.use(express.urlencoded({extended: true}));
 
 const supabase = createClient(
     SUPABASE_URL,
